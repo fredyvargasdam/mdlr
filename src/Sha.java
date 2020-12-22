@@ -7,15 +7,15 @@ import java.security.NoSuchAlgorithmException;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author user
  */
 public class Sha {
+
     /**
      * Aplica SHA al texto pasado por parámetro
-     * 
+     *
      * @param texto
      */
     public void cifrarTexto(String texto) {
@@ -43,8 +43,9 @@ public class Sha {
         String HEX = "";
         for (int i = 0; i < resumen.length; i++) {
             String h = Integer.toHexString(resumen[i] & 0xFF);
-            if (h.length() == 1)
-                    HEX += "0";
+            if (h.length() == 1) {
+                HEX += "0";
+            }
             HEX += h;
         }
         return HEX.toUpperCase();

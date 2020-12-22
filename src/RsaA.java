@@ -1,3 +1,4 @@
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.security.Key;
@@ -15,83 +16,84 @@ import javax.crypto.Cipher;
 /**
  * Ejemplo sencillo de encriptado/desencriptado con algoritmo RSA. Se comenta
  * tambien como guardar las claves en fichero y recuperarlas después.
- * 
+ *
  * @author Chuidiang
  */
 public class RsaA {
-   private static Cipher rsa;
 
-   public static void main(String[] args) throws Exception {
-      // Generar el par de claves
-      KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-      KeyPair keyPair = keyPairGenerator.generateKeyPair();
-      PublicKey publicKey = keyPair.getPublic();
-      PrivateKey privateKey = keyPair.getPrivate();
+    private static Cipher rsa;
 
-      // Se salva y recupera de fichero la clave publica
-      saveKey(publicKey, "publickey.dat");
-      publicKey = loadPublicKey("publickey.dat");
+    public static void main(String[] args) throws Exception {
+        // Generar el par de claves
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        PublicKey publicKey = keyPair.getPublic();
+        PrivateKey privateKey = keyPair.getPrivate();
 
-      // Se salva y recupera de fichero la clave privada
-      saveKey(privateKey, "privatekey.dat");
-      privateKey = loadPrivateKey("privatekey.dat");
+        // Se salva y recupera de fichero la clave publica
+        saveKey(publicKey, "publickey.dat");
+        publicKey = loadPublicKey("publickey.dat");
 
-      // Obtener la clase para encriptar/desencriptar
-      rsa = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        // Se salva y recupera de fichero la clave privada
+        saveKey(privateKey, "privatekey.dat");
+        privateKey = loadPrivateKey("privatekey.dat");
 
-      // Texto a encriptar
-      String text = "Text to encrypt";
+        // Obtener la clase para encriptar/desencriptar
+        rsa = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 
-      // Se encripta
-      rsa.init(Cipher.ENCRYPT_MODE, publicKey);
-      byte[] encriptado = rsa.doFinal(text.getBytes());
+        // Texto a encriptar
+        String text = "Text to encrypt";
 
-      // Escribimos el encriptado para verlo, con caracteres visibles
-      for (byte b : encriptado) {
-         System.out.print(Integer.toHexString(0xFF & b));
-      }
-      System.out.println();
+        // Se encripta
+        rsa.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] encriptado = rsa.doFinal(text.getBytes());
 
-      // Se desencripta
-      rsa.init(Cipher.DECRYPT_MODE, privateKey);
-      byte[] bytesDesencriptados = rsa.doFinal(encriptado);
-      String textoDesencripado = new String(bytesDesencriptados);
+        // Escribimos el encriptado para verlo, con caracteres visibles
+        for (byte b : encriptado) {
+            System.out.print(Integer.toHexString(0xFF & b));
+        }
+        System.out.println();
 
-      // Se escribe el texto desencriptado
-      System.out.println(textoDesencripado);
+        // Se desencripta
+        rsa.init(Cipher.DECRYPT_MODE, privateKey);
+        byte[] bytesDesencriptados = rsa.doFinal(encriptado);
+        String textoDesencripado = new String(bytesDesencriptados);
 
-   }
+        // Se escribe el texto desencriptado
+        System.out.println(textoDesencripado);
 
-   private static PublicKey loadPublicKey(String fileName) throws Exception {
-      FileInputStream fis = new FileInputStream(fileName);
-      int numBtyes = fis.available();
-      byte[] bytes = new byte[numBtyes];
-      fis.read(bytes);
-      fis.close();
+    }
 
-      KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-      KeySpec keySpec = new X509EncodedKeySpec(bytes);
-      PublicKey keyFromBytes = keyFactory.generatePublic(keySpec);
-      return keyFromBytes;
-   }
+    private static PublicKey loadPublicKey(String fileName) throws Exception {
+        FileInputStream fis = new FileInputStream(fileName);
+        int numBtyes = fis.available();
+        byte[] bytes = new byte[numBtyes];
+        fis.read(bytes);
+        fis.close();
 
-   private static PrivateKey loadPrivateKey(String fileName) throws Exception {
-      FileInputStream fis = new FileInputStream(fileName);
-      int numBtyes = fis.available();
-      byte[] bytes = new byte[numBtyes];
-      fis.read(bytes);
-      fis.close();
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        KeySpec keySpec = new X509EncodedKeySpec(bytes);
+        PublicKey keyFromBytes = keyFactory.generatePublic(keySpec);
+        return keyFromBytes;
+    }
 
-      KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-      KeySpec keySpec = new PKCS8EncodedKeySpec(bytes);
-      PrivateKey keyFromBytes = keyFactory.generatePrivate(keySpec);
-      return keyFromBytes;
-   }
+    private static PrivateKey loadPrivateKey(String fileName) throws Exception {
+        FileInputStream fis = new FileInputStream(fileName);
+        int numBtyes = fis.available();
+        byte[] bytes = new byte[numBtyes];
+        fis.read(bytes);
+        fis.close();
 
-   private static void saveKey(Key key, String fileName) throws Exception {
-      byte[] publicKeyBytes = key.getEncoded();
-      FileOutputStream fos = new FileOutputStream(fileName);
-      fos.write(publicKeyBytes);
-      fos.close();
-   }
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        KeySpec keySpec = new PKCS8EncodedKeySpec(bytes);
+        PrivateKey keyFromBytes = keyFactory.generatePrivate(keySpec);
+        return keyFromBytes;
+    }
+
+    private static void saveKey(Key key, String fileName) throws Exception {
+        byte[] publicKeyBytes = key.getEncoded();
+        FileOutputStream fos = new FileOutputStream(fileName);
+        fos.write(publicKeyBytes);
+        fos.close();
+    }
 }
