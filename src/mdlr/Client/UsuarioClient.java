@@ -37,7 +37,7 @@ public class UsuarioClient {
     private static PublicKey publicKey;
     private static Cipher rsa;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/PruebaClaves/webresources";
+    private static final String BASE_URI = "http://localhost:8080/mdlr2/webresources";
 
     public UsuarioClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -55,7 +55,7 @@ public class UsuarioClient {
     }
 
  
-    public static <T> T usuarioByLogin(Class<T> responseType, String login, String pass) throws ClientErrorException, ContraseniaIncorrectaException {
+     public static <T> T usuarioByLogin(Class<T> responseType, String login, String pass) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("usuarioByLogin/{0}/{1}", new Object[]{login, pass}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -85,31 +85,32 @@ public class UsuarioClient {
         PublicKey keyFromBytes = keyFactory.generatePublic(keySpec);
         return keyFromBytes;
     }
+     private static String sinBarra(String pass){
+         return pass.replaceAll("/", "%2f");
+     }
 
     public static void main(String[] args) throws Exception {
+        UsuarioClient usuarioClient = new UsuarioClient();
         String pass = "abcd*1234";
 
         rsa = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         publicKey = loadPublicKey("publickey.dat");
         rsa.init(Cipher.ENCRYPT_MODE, publicKey);
         byte[] encriptado = rsa.doFinal(pass.getBytes(StandardCharsets.UTF_8));
-        String sn = DatatypeConverter.printBase64Binary(encriptado);
-        Usuario uno = new Usuario();
-        uno.setLogin("admin");
-        uno.setPassword(sn);
-        UsuarioClient u = new UsuarioClient();
-        Usuario uR = new Usuario();
-        if(!"hola".equals("hola")){
-            System.out.println("NO");
+        String passCifrada = DatatypeConverter.printBase64Binary(encriptado);
+        System.out.println(passCifrada);
+        System.out.println(sinBarra(passCifrada));
+        
+        // La llamada
+      //  Usuario usuario = UsuarioClient.usuarioByLogin(Usuario.class, "admin", passCifrada);
+        try{
+            //Usuario usuario = UsuarioClient.find(Usuario.class, "1");
+            Usuario usuario = UsuarioClient.usuarioByLogin(Usuario.class, "admin", sinBarra(passCifrada));
+            System.out.println(usuario.getLogin() + "  " + usuario.getPassword());
+        } catch (Exception e){
+            System.out.println(e);
         }
-            
-        //   uR.setLogin("Marta");
-        // uR.setId_usuario(1);
-
-        //      System.out.print(new String(encriptado));
-        uR = UsuarioClient.usuarioByLogin(Usuario.class, "admin", sn);
-        //  uR=u.find(Usuario.class, "1");
-        System.out.println(uR.getLogin() + "  " + uR.getPassword());
+        
         
         
     }
