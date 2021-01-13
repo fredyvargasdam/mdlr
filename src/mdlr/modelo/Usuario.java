@@ -8,6 +8,7 @@ package mdlr.modelo;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 /**
  *
@@ -53,7 +54,8 @@ public class Usuario implements Serializable {
     /*
     * Ultimo acceso del usuario
      */
-  //  private Timestamp lastAccess;
+    @XmlJavaTypeAdapter( TimestampAdapter.class)
+    private Timestamp lastAccess;
 
     /*
     * Ultimo cambio de contraseña del usuario
@@ -169,18 +171,18 @@ public class Usuario implements Serializable {
      * Devuelve el valor de lastaccess para Usuario
      * @return el valor de lastaccess
      */
-  /*  public Timestamp getLastAccess() {
+   public Timestamp getLastAccess() {
         return lastAccess;
     }
-*/
+
     /*
      * Establece el valor de lastaccess para Usuario
      * @param de lastaccess del valor lastaccess
      */
-  /*  public void setLastAccess(Timestamp lastAccess) {
+    public void setLastAccess(Timestamp lastAccess) {
         this.lastAccess = lastAccess;
     }
-*/
+
     /*
      * Devuelve el valor de lastpaswordchange para Usuario
      * @return el valor de lastpasswordchange

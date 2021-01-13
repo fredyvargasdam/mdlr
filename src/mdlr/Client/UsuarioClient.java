@@ -37,8 +37,8 @@ public class UsuarioClient {
     private static PublicKey publicKey;
     private static Cipher rsa;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/mdlr2/webresources";
-
+ //   private static final String BASE_URI = "http://localhost:8080/mdlr2/webresources";
+    private static final String BASE_URI = "http://localhost:8080/PruebaClaves/webresources";
     public UsuarioClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
         webTarget = client.target(BASE_URI).path("usuario");
@@ -86,20 +86,21 @@ public class UsuarioClient {
         return keyFromBytes;
     }
      private static String sinBarra(String pass){
-         return pass.replaceAll("/", "%2f");
+         return pass.replaceAll("/", "fff");
      }
 
     public static void main(String[] args) throws Exception {
         UsuarioClient usuarioClient = new UsuarioClient();
-        String pass = "abcd*1234";
+        String pass = "admin";
 
         rsa = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         publicKey = loadPublicKey("publickey.dat");
         rsa.init(Cipher.ENCRYPT_MODE, publicKey);
-        byte[] encriptado = rsa.doFinal(pass.getBytes(StandardCharsets.UTF_8));
+       // byte[] encriptado = rsa.doFinal(pass.getBytes(StandardCharsets.UTF_8));
+       byte[] encriptado = rsa.doFinal(pass.getBytes());
         String passCifrada = DatatypeConverter.printBase64Binary(encriptado);
         System.out.println(passCifrada);
-        System.out.println(sinBarra(passCifrada));
+       // System.out.println((passCifrada));
         
         // La llamada
       //  Usuario usuario = UsuarioClient.usuarioByLogin(Usuario.class, "admin", passCifrada);
@@ -107,6 +108,7 @@ public class UsuarioClient {
             //Usuario usuario = UsuarioClient.find(Usuario.class, "1");
             Usuario usuario = UsuarioClient.usuarioByLogin(Usuario.class, "admin", sinBarra(passCifrada));
             System.out.println(usuario.getLogin() + "  " + usuario.getPassword());
+            System.out.println(usuario.getLogin() + "  " + usuario.getLastAccess());
         } catch (Exception e){
             System.out.println(e);
         }
